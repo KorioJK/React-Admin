@@ -17,6 +17,32 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
+const CollapsibleItem = ({ title, children, icon }) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const handleCollapseToggle = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  return (
+    <>
+      <Typography
+        variant="h6"
+        sx={{
+          m: "15px 0 5px 0",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center", // Align items vertically
+        }}
+        onClick={handleCollapseToggle}
+      >
+        {icon}
+        {title}
+      </Typography>
+      {isCollapsed && children}
+    </>
+  );
+};
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -40,6 +66,7 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+
   return (
     <Box
       sx={{
@@ -105,10 +132,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Ed Roh
+                  John Korio
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  VP Fancy Admin
+                  CPO/CISO
                 </Typography>
               </Box>
             </Box>
@@ -123,6 +150,30 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+
+            <CollapsibleItem title="Datsa" icon={<PeopleOutlinedIcon />}>
+              <Item
+                title="Manage Team"
+                to="/team"
+                icon={<PeopleOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Contacts Information"
+                to="/contacts"
+                icon={<ContactsOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Item
+                title="Invoices Balances"
+                to="/invoices"
+                icon={<ReceiptOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </CollapsibleItem>
             <Typography
               variant="h6"
               color={colors.grey[300]}
