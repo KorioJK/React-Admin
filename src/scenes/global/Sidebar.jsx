@@ -1,7 +1,7 @@
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useState } from "react";
-import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
+import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import "react-pro-sidebar/dist/css/styles.css";
 import { Link } from "react-router-dom";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -20,7 +20,7 @@ import { mockSidebar } from "../../data/mockData";
 import AnalyticsOutlinedIcon from "@mui/icons-material/AnalyticsOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import KeyboardArrowLeftOutlinedIcon from '@mui/icons-material/KeyboardArrowLeftOutlined';
+import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 function getIconByName(iconName) {
   switch (iconName) {
     case "home":
@@ -99,21 +99,41 @@ const CollapsibleItem = ({
     </>
   );
 };
-const Item = ({ title, to, icon, selected, setSelected }) => {
+const Item = ({
+  title,
+  to,
+  icon,
+  selected,
+  setSelected,
+  setMenuSelected,
+  selectedMenu,
+  submenuitems,
+}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   return (
-    <MenuItem
-      active={selected === title}
+    <SubMenu
+      active={selectedMenu === title}
       style={{ color: colors.grey[100] }}
-      onClick={() => setSelected(title)}
-      icon={icon}
+      onClick={() => setMenuSelected(title)}
+      icon={getIconByName(icon)}
+      title={title}
     >
-      <Typography>
-        {title}
-        <Link to={to} />
-      </Typography>
-    </MenuItem>
+      {submenuitems.map((submenuitem, j) => (
+        <MenuItem
+          key={j}
+          active={selected === submenuitem.title}
+          style={{ color: colors.grey[100] }}
+          onClick={() => setSelected(submenuitem.title)}
+          icon={getIconByName(submenuitem.icon)}
+        >
+          <Typography>
+            {submenuitem.title}
+            <Link to={submenuitem.to} />
+          </Typography>
+        </MenuItem>
+      ))}
+    </SubMenu>
   );
 };
 
@@ -200,158 +220,19 @@ const Sidebar = () => {
 
           {/* MENU ITEMS */}
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-            <Item
-              title="Dashboard"
-              to="/"
-              icon={<HomeOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
-            <CollapsibleItem
-              title="Datsa"
-              icon={<PeopleOutlinedIcon />}
-              sidebarCollapsed={isCollapsed}
-              setMenuSelected={setMenuSelected}
-              selectedMenu={selectedMenu}
-            >
-              <Item
-                title="Manage Team"
-                to="/team"
-                icon={<PeopleOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Item
-                title="Contacts Information"
-                to="/contacts"
-                icon={<ContactsOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Item
-                title="Invoices Balances"
-                to="/invoices"
-                icon={<ReceiptOutlinedIcon />}
-                selected={selected}
-                setSelected={setSelected}
-              />
-            </CollapsibleItem>
-
             {mockSidebar.map((menuitem, i) => (
-              <CollapsibleItem
+              <Item
                 key={i}
                 title={menuitem.title}
-                icon={getIconByName(menuitem.icon)}
-                sidebarCollapsed={isCollapsed}
+                icon={menuitem.icon}
+                selected={selected}
+                setSelected={setSelected}
                 setMenuSelected={setMenuSelected}
                 selectedMenu={selectedMenu}
-              >
-                {menuitem.children.map((submenuitem, j) => (
-                  <Item
-                    key={j}
-                    title={submenuitem.title}
-                    to={submenuitem.to}
-                    icon={getIconByName(submenuitem.icon)}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                ))}
-              </CollapsibleItem>
+                submenuitems={menuitem.children}
+
+              />
             ))}
-
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 0" }}
-            >
-              Data
-            </Typography>
-
-            <Item
-              title="Manage Team"
-              to="/team"
-              icon={<PeopleOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Contacts Information"
-              to="/contacts"
-              icon={<ContactsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Invoices Balances"
-              to="/invoices"
-              icon={<ReceiptOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 0" }}
-            >
-              Pages
-            </Typography>
-            <Item
-              title="Profile Form"
-              to="/form"
-              icon={<PersonOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Calendar"
-              to="/calendar"
-              icon={<CalendarTodayOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="FAQ Page"
-              to="/faq"
-              icon={<HelpOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 0" }}
-            >
-              Charts
-            </Typography>
-            <Item
-              title="Bar Chart"
-              to="/bar"
-              icon={<BarChartOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Pie Chart"
-              to="/pie"
-              icon={<PieChartOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Line Chart"
-              to="/line"
-              icon={<TimelineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Geography"
-              to="/geography"
-              icon={<MapOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
           </Box>
         </Menu>
       </ProSidebar>
