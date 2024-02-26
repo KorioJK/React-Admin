@@ -16,12 +16,61 @@ import PieChartOutlinedIcon from "@mui/icons-material/PieChartOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-
-const CollapsibleItem = ({ title, children, icon }) => {
+import { mockSidebar } from "../../data/mockData";
+import AnalyticsOutlinedIcon from "@mui/icons-material/AnalyticsOutlined";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import KeyboardArrowLeftOutlinedIcon from '@mui/icons-material/KeyboardArrowLeftOutlined';
+function getIconByName(iconName) {
+  switch (iconName) {
+    case "home":
+      return <HomeOutlinedIcon />;
+    case "people":
+      return <PeopleOutlinedIcon />;
+    case "contacts":
+      return <ContactsOutlinedIcon />;
+    case "receipt":
+      return <ReceiptOutlinedIcon />;
+    case "person":
+      return <PersonOutlinedIcon />;
+    case "calendar":
+      return <CalendarTodayOutlinedIcon />;
+    case "help":
+      return <HelpOutlinedIcon />;
+    case "barChart":
+      return <BarChartOutlinedIcon />;
+    case "pieChart":
+      return <PieChartOutlinedIcon />;
+    case "timeline":
+      return <TimelineOutlinedIcon />;
+    case "menu":
+      return <MenuOutlinedIcon />;
+    case "map":
+      return <MapOutlinedIcon />;
+    case "analytics":
+      return <AnalyticsOutlinedIcon />;
+    default:
+      // Return a default icon or handle the case when the iconName doesn't match any case
+      return null;
+  }
+}
+const CollapsibleItem = ({
+  title,
+  children,
+  icon,
+  sidebarCollapsed,
+  setMenuSelected,
+  selectedMenu,
+}) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const handleCollapseToggle = () => {
     setIsCollapsed(!isCollapsed);
+  };
+  const handleClick = () => {
+    handleCollapseToggle();
+    setMenuSelected(title);
   };
 
   return (
@@ -29,17 +78,24 @@ const CollapsibleItem = ({ title, children, icon }) => {
       <Typography
         variant="h6"
         sx={{
-          m: "15px 0 5px 0",
+          m: "5px 0 5px 0",
           cursor: "pointer",
           display: "flex",
+          justifyContent: "space-between",
           alignItems: "center", // Align items vertically
         }}
-        onClick={handleCollapseToggle}
+        onClick={handleClick}
       >
         {icon}
-        {title}
+        {!sidebarCollapsed && title}
+        {!isCollapsed ? (
+          <ExpandLessIcon sx={{ ml: 1 }} />
+        ) : (
+          <KeyboardArrowLeftOutlinedIcon sx={{ ml: 1 }} />
+        )}{" "}
       </Typography>
-      {isCollapsed && children}
+
+      {isCollapsed && selectedMenu === title && children}
     </>
   );
 };
@@ -66,6 +122,7 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const [selectedMenu, setMenuSelected] = useState("Dashboard");
 
   return (
     <Box
@@ -151,7 +208,13 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
 
-            <CollapsibleItem title="Datsa" icon={<PeopleOutlinedIcon />}>
+            <CollapsibleItem
+              title="Datsa"
+              icon={<PeopleOutlinedIcon />}
+              sidebarCollapsed={isCollapsed}
+              setMenuSelected={setMenuSelected}
+              selectedMenu={selectedMenu}
+            >
               <Item
                 title="Manage Team"
                 to="/team"
@@ -174,6 +237,29 @@ const Sidebar = () => {
                 setSelected={setSelected}
               />
             </CollapsibleItem>
+
+            {mockSidebar.map((menuitem, i) => (
+              <CollapsibleItem
+                key={i}
+                title={menuitem.title}
+                icon={getIconByName(menuitem.icon)}
+                sidebarCollapsed={isCollapsed}
+                setMenuSelected={setMenuSelected}
+                selectedMenu={selectedMenu}
+              >
+                {menuitem.children.map((submenuitem, j) => (
+                  <Item
+                    key={j}
+                    title={submenuitem.title}
+                    to={submenuitem.to}
+                    icon={getIconByName(submenuitem.icon)}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                ))}
+              </CollapsibleItem>
+            ))}
+
             <Typography
               variant="h6"
               color={colors.grey[300]}

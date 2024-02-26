@@ -1,5 +1,29 @@
 import { tokens } from "../theme";
 
+export const mockSidebar = [
+  {
+    id:1,
+    title: "Dashboard",
+    to: "/",
+    icon: "home",
+    children: [
+      {
+        id:1,
+        title: "Dashboard",
+        to: "/",
+        icon: "home",
+      },
+
+      {
+        id:2,
+        title: "Analytics",
+        to: "/bar",
+        icon: "analytics",
+      },
+    ],
+  },
+];
+
 export const mockDataTeam = [
   {
     id: 1,
