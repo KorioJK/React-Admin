@@ -1,6 +1,6 @@
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { useState } from "react";
+import { useState, Component, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import "react-pro-sidebar/dist/css/styles.css";
 import { Link } from "react-router-dom";
@@ -18,9 +18,8 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import { mockSidebar } from "../../data/mockData";
 import AnalyticsOutlinedIcon from "@mui/icons-material/AnalyticsOutlined";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
+import Axios from "axios";
+
 function getIconByName(iconName) {
   switch (iconName) {
     case "home":
@@ -51,54 +50,9 @@ function getIconByName(iconName) {
       return <AnalyticsOutlinedIcon />;
     default:
       // Return a default icon or handle the case when the iconName doesn't match any case
-      return null;
+      return <AnalyticsOutlinedIcon />;
   }
 }
-const CollapsibleItem = ({
-  title,
-  children,
-  icon,
-  sidebarCollapsed,
-  setMenuSelected,
-  selectedMenu,
-}) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-  const handleCollapseToggle = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-  const handleClick = () => {
-    handleCollapseToggle();
-    setMenuSelected(title);
-  };
-
-  return (
-    <>
-      <Typography
-        variant="h6"
-        sx={{
-          m: "5px 0 5px 0",
-          cursor: "pointer",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center", // Align items vertically
-        }}
-        onClick={handleClick}
-      >
-        {icon}
-        {!sidebarCollapsed && title}
-        {!isCollapsed ? (
-          <ExpandLessIcon sx={{ ml: 1 }} />
-        ) : (
-          <KeyboardArrowLeftOutlinedIcon sx={{ ml: 1 }} />
-        )}{" "}
-      </Typography>
-
-      {isCollapsed && selectedMenu === title && children}
-    </>
-  );
-};
 const Item = ({
   title,
   to,
@@ -143,6 +97,13 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
   const [selectedMenu, setMenuSelected] = useState("Dashboard");
+  const [apiData, setData] = useState(mockSidebar);
+
+  useEffect(() => {
+    Axios.get("http://localhost:5050/rolerights/18").then((res) => {
+      setData(res.data.rolerights);
+    });
+  }, []);
 
   return (
     <Box
@@ -220,7 +181,7 @@ const Sidebar = () => {
 
           {/* MENU ITEMS */}
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-            {mockSidebar.map((menuitem, i) => (
+            {apiData.map((menuitem, i) => (
               <Item
                 key={i}
                 title={menuitem.title}
@@ -230,7 +191,6 @@ const Sidebar = () => {
                 setMenuSelected={setMenuSelected}
                 selectedMenu={selectedMenu}
                 submenuitems={menuitem.children}
-
               />
             ))}
           </Box>
